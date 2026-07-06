@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Indulge in heavenly sweet delights at Crafted Brews. Premium freshly baked cakes, cheesecakes, brownies, and pastries made with love.">
+        <link rel="stylesheet" href="style.css">
+        <link rel="shortcut icon" href="images/logo.PNG" type="image/x-icon">
+        <!-- Font Awesome -->
+        <script src="https://kit.fontawesome.com/67fcc500fd.js" crossorigin="anonymous"></script>
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+        
+        <!-- Firebase Compat SDKs -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+        <script src="firebase-config.js"></script>
+        
+        <title>Crafted Brews - Bakery & Cafe</title>
+    </head>
+
+    <body>
+<header class="header">
+            <a href="#home" class="logo"><img src="images/logo.PNG" alt="Crafted Brews Logo"></a>
+            <nav class="navbar">
+                <a href="#home">Home</a>
+                <a href="#cakes">Cakes</a>
+                <a href="#cheese-cakes">Cheesecakes</a>
+                <a href="#sourdough">Sourdough</a>
+                <a href="#new-arrivals">New Arrivals</a>
+                <a href="#about">About</a>
+                <a href="#review">Review</a>
+            </nav>
+            <div class="icons">
+                <div class="search-icon" id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <div class="cart-icon" id="cart-btn">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-badge">0</span>
+                </div>
+                <div class="user-icon" id="user-btn">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="menu-icon" id="menu-btn"><i class="fa-solid fa-bars"></i></div>
+            </div>
+            
+
+            <!--cart item-->
+            <div class="cart-items-container">
+                <div class="cart-header">
+                    <h2>Shopping Cart</h2>
+                    <div class="cart-close-btn"><span class="fas fa-times"></span></div>
+                </div>
+                <div class="cart-list">
+                    <!-- Dynamic Cart Items Rendered Here -->
+                </div>
+                <div class="cart-footer">
+                    <div class="cart-total">Total: <span>Rs. 0/-</span></div>
+                    <button class="btn checkout-btn" id="open-checkout-btn">Proceed to Checkout</button>
+                </div>
+            </div>
+            </header>
+
+            <section class="home" id="home">
+                <div class="hero-container">
+                    <div class="hero-content">
+                        <h1>Welcome to Crafted Brews.</h1>
+                        <p>Indulge in our freshly baked artisanal treats made with love and the finest ingredients. Discover the perfect blend of rich flavors and comforting warmth at our bakery.</p>
+                        <div class="hero-actions">
+                            <a class="btn hero-btn-primary" href="#cakes">Shop Now</a>
+                            <a class="btn hero-btn-secondary" href="#about">Our Story</a>
+                        </div>
+                    </div>
+                    <div class="hero-image-wrapper">
+                        <img src="images/hero_bread.jpg" alt="Artisanal Baked Loaf" class="hero-main-img">
+                    </div>
+                </div>
+            </section>
+            
+            <div class="scallop-divider">
+                <svg viewBox="0 0 1200 24" preserveAspectRatio="none" style="display: block; width: 100%; height: 24px;">
+                    <path d="M0,0 C30,12 60,12 90,0 C120,12 150,12 180,0 C210,12 240,12 270,0 C300,12 330,12 360,0 C390,12 420,12 450,0 C480,12 510,12 540,0 C570,12 600,12 630,0 C660,12 690,12 720,0 C750,12 780,12 810,0 C840,12 870,12 900,0 C930,12 960,12 990,0 C1020,12 1050,12 1080,0 C1110,12 1140,12 1170,0 C1185,6 1195,6 1200,0 L1200,24 L0,24 Z"></path>
+                </svg>
+            </div>
+            <section class="cakes" id="cakes">
+                <h2 class="title">Our<span> Cakes</span></h2>
+                <div class="wrapper">
+                    <div class="cake-card" data-name="Double Layer Chocolate Dulce De Leche Cake" data-price="400" data-image="images/double layer chocolate dulce de leche cake.PNG" data-description="A decadent two-tier chocolate sponge layered with rich dulce de leche frosting and topped with chocolate shavings.">
+                        <div class="card-clickable">
+                            <img src="images/double layer chocolate dulce de leche cake.PNG" alt="Double Layer Chocolate Dulce De Leche Cake">
+                            <h2>Double Layer Chocolate Dulce De Leche Cake</h2>
+                        </div>
+                        <div class="price">Rs. 400/-</div>
+                        <button class="btn add-to-cart-btn">add to cart</button>
+                    </div>
+
+                    <div class="cake-card" data-name="Lemon Ricotta Cake with Toasted Pistachio Frosting" data-price="700" data-image="images/lemon ricotta cake with toasted pistachio frosting.PNG" data-description="Light and zesty lemon ricotta sponge filled with citrus curd and frosted with a roasted pistachio buttercream.">
+                        <div class="card-clickable">
+                            <img src="images/lemon ricotta cake with toasted pistachio frosting.PNG" alt="Lemon Ricotta Cake with Toasted Pistachio Frosting">
+                            <h2>Lemon Ricotta Cake with Toasted Pistachio Frosting</h2>
+                        </div>
+                        <div class="price">Rs. 700/- <span>Rs. 900/-</span></div>
+                        <button class="btn add-to-cart-btn">add to cart</button>
+                    </div>
+
+                    <div class="cake-card" data-name="Salted Caramel Chocolate Cake" data-price="400" data-image="images/salted caramel chocolate cake.PNG" data-description="Moist chocolate cake layered with salted caramel filling, finished with silky chocolate ganache.">
+                        <div class="card-clickable">
+                            <img src="images/salted caramel chocolate cake.PNG" alt="Salted Caramel Chocolate Cake">
+                            <h2>Salted Caramel Chocolate Cake</h2>
+                        </div>
+                        <div class="price">Rs. 400/-</div>
+                        <button class="btn add-to-cart-btn">add to cart</button>
+                    </div>
+
+                    <div class="cake-card" data-name="Tiramisu Crunch Cake" data-price="900" data-image="images/tiramisu crunch cake.PNG" data-description="An Italian classic reimagined. Coffee-soaked sponge with mascarpone cream and espresso chocolate crunch.">
+                        <div class="card-clickable">
+                            <img src="images/tiramisu crunch cake.PNG" alt="Tiramisu Crunch Cake">
+                            <h2>Tiramisu Crunch Cake</h2>
+                        </div>
+                        <div class="price">Rs. 900/-</div>
+                        <button class="btn add-to-cart-btn">add to cart</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="Cheesecakes" id="cheese-cakes">
+                <h2 class="title">Our<span> Cheesecakes</span></h2>
+                <div class="wrapper">
+                    <div class="cheese-card" data-name="Black Forest Cheesecake" data-price="370" data-image="images/black forest cheesecake.jpg" data-description="Creamy New York style cheesecake on a chocolate crust, swirled with dark cherries and dark chocolate curls.">
+                        <div class="icons">
+                            <button class="fas fa-cart-shopping add-to-cart-icon" aria-label="Add to cart"></button>
+                        </div>
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/black forest cheesecake.jpg" alt="Black Forest Cheesecake" />
+                            </div>
+                            <div class="content">
+                                <h2>Black Forest Cheesecake</h2>
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price">Rs. 370/-</div>
+                    </div>
+
+                    <div class="cheese-card" data-name="Blueberry Cheesecake" data-price="400" data-image="images/blueberry cheesecake.jpg" data-description="Silky vanilla cheesecake topped with a sweet, tangy wild blueberry compote on a graham cracker crust.">
+                        <div class="icons">
+                            <button class="fas fa-cart-shopping add-to-cart-icon" aria-label="Add to cart"></button>
+                        </div>
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/blueberry cheesecake.jpg" alt="Blueberry Cheesecake" />
+                            </div>
+                            <div class="content">
+                                <h2>Blueberry Cheesecake</h2>
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price">Rs. 400/-</div>
+                    </div>
+
+                    <div class="cheese-card" data-name="Strawberry Cheesecake" data-price="500" data-image="images/strawbeery cheesecake.jpg" data-description="Rich and creamy cheesecake crowned with fresh glazed strawberries on a butter biscuit base.">
+                        <div class="icons">
+                            <button class="fas fa-cart-shopping add-to-cart-icon" aria-label="Add to cart"></button>
+                        </div>
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/strawbeery cheesecake.jpg" alt="Strawberry Cheesecake" />
+                            </div>
+                            <div class="content">
+                                <h2>Strawberry Cheesecake</h2>
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price">Rs. 500/-</div>
+                    </div>
+
+                    <div class="cheese-card" data-name="White Chocolate Raspberry Swirl Cheesecake" data-price="870" data-image="images/white chocolate raspberry swirl  cheesecake.jpg" data-description="Velvety white chocolate cheesecake marbled with raspberry puree and finished with chocolate curls.">
+                        <div class="icons">
+                            <button class="fas fa-cart-shopping add-to-cart-icon" aria-label="Add to cart"></button>
+                        </div>
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/white chocolate raspberry swirl  cheesecake.jpg" alt="White Chocolate Raspberry Swirl Cheesecake" />
+                            </div>
+                            <div class="content">
+                                <h2>White Chocolate Raspberry Swirl Cheesecake</h2>
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price">Rs. 870/-</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="sourdough" id="sourdough">
+                <h2 class="title">Artisanal<span> Sourdough</span></h2>
+                <div class="wrapper">
+                    <div class="sourdough-card" data-name="Classic Country Sourdough" data-price="160" data-image="images/classic_sourdough.jpg" data-description="Our signature slow-fermented country loaf, featuring a blistered, caramelized crust and a soft, open crumb with a clean, tangy flavor profile.">
+                        <div class="icons">
+                            <button class="fas fa-cart-shopping add-to-cart-icon" aria-label="Add to cart"></button>
+                        </div>
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/classic_sourdough.jpg" alt="Classic Country Sourdough" />
+                            </div>
+                            <div class="content">
+                                <h2>Classic Country Sourdough</h2>
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price">Rs. 160/-</div>
+                    </div>
+
+                    <div class="sourdough-card" data-name="Rosemary Garlic Sourdough" data-price="180" data-image="images/rosemary_sourdough.jpg" data-description="Artisanal wild yeast loaf infused with aromatic fresh rosemary needles and roasted cloves of garlic.">
+                        <div class="icons">
+                            <button class="fas fa-cart-shopping add-to-cart-icon" aria-label="Add to cart"></button>
+                        </div>
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/rosemary_sourdough.jpg" alt="Rosemary Garlic Sourdough" />
+                            </div>
+                            <div class="content">
+                                <h2>Rosemary Garlic Sourdough</h2>
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price">Rs. 180/-</div>
+                    </div>
+
+                    <div class="sourdough-card" data-name="Cranberry Walnut Sourdough" data-price="200" data-image="images/cranberry_sourdough.jpg" data-description="A beautiful rustic sourdough packed with tart dried cranberries and toasted organic walnut chunks, sweet and tangy.">
+                        <div class="icons">
+                            <button class="fas fa-cart-shopping add-to-cart-icon" aria-label="Add to cart"></button>
+                        </div>
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/cranberry_sourdough.jpg" alt="Cranberry Walnut Sourdough" />
+                            </div>
+                            <div class="content">
+                                <h2>Cranberry Walnut Sourdough</h2>
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price">Rs. 200/-</div>
+                    </div>
+                </div>
+            </section>
+            <section class="new-arrivals" id="new-arrivals">
+                <h2 class="title">New <span>Arrivals</span></h2>
+                <div class="wrapper">
+                    <div class="card" data-name="Fudgy Brownies" data-price="150" data-image="images/brownies.PNG" data-description="Rich, dense chocolate brownies with a crackly top and gooey chocolate chunks.">
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/brownies.PNG" alt="Fudgy Brownies">
+                            </div>
+                            <div class="content">
+                                <h2>Fudgy Brownies</h2>
+                                <h3>Experience pure bliss with our fudgy brownies—rich, chocolatey, and irresistibly gooey! </h3>
+                            </div>
+                        </div>
+                        <div class="content" style="padding-top:0;">
+                            <div class="price" style="font-size: 1.8rem; font-weight: 700; color: var(--main-color); margin-bottom: 1.5rem;">Rs. 150/-</div>
+                            <button class="btn add-to-cart-btn">add to cart</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-name="Lava Cakes" data-price="180" data-image="images/gluten free lava cake.PNG" data-description="Molten hot chocolate lava cake with a flowing gooey center, perfectly baked.">
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/gluten free lava cake.PNG" alt="Lava Cakes">
+                            </div>
+                            <div class="content">
+                                <h2>Lava Cakes</h2>
+                                <h3> Dive into our molten lava cake, where a warm, gooey chocolate center awaits to delight your taste buds!</h3>
+                            </div>
+                        </div>
+                        <div class="content" style="padding-top:0;">
+                            <div class="price" style="font-size: 1.8rem; font-weight: 700; color: var(--main-color); margin-bottom: 1.5rem;">Rs. 180/-</div>
+                            <button class="btn add-to-cart-btn">add to cart</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-name="Cinnamon Rolls" data-price="120" data-image="images/chocolate cinnamon rolls.PNG" data-description="Warm, pillowy yeast rolls swirled with sweet cinnamon sugar and coated with cream cheese frosting.">
+                        <div class="card-clickable">
+                            <div class="img">
+                                <img src="images/chocolate cinnamon rolls.PNG" alt="Chocolate Cinnamon Rolls">
+                            </div>
+                            <div class="content">
+                                <h2>Cinnamon Rolls</h2>
+                                <h3>Savor the warmth of our cinnamon rolls, perfectly soft and swirled with sweet cinnamon, topped with creamy icing!</h3>
+                            </div>
+                        </div>
+                        <div class="content" style="padding-top:0;">
+                            <div class="price" style="font-size: 1.8rem; font-weight: 700; color: var(--main-color); margin-bottom: 1.5rem;">Rs. 120/-</div>
+                            <button class="btn add-to-cart-btn">add to cart</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about" id="about">
+                <div class="about-banner">
+                    <div class="about-banner-text">The Crafted Story</div>
+                </div>
+                <div class="about-split-section">
+                    <div class="about-quote-panel">
+                        <i class="fa-solid fa-quote-left quote-icon"></i>
+                        <p class="quote-text">We believe in making every moment sweet and every loaf perfect. Handcrafted recipes baked fresh daily with love and pure ingredients.</p>
+                        <span class="quote-author">— Master Baker, Crafted Brews</span>
+                    </div>
+                    <div class="about-image-panel">
+                        <img src="images/caramel_pastry.jpg" alt="Premium Pastry" class="about-pastry-img">
+                    </div>
+                </div>
+            </section>
+
+
+            <section class="review" id="review">
+                <h2 class="title">Customer<span> Reviews</span></h2>
+                
+                <!-- Leave a Review form container -->
+                <div class="review-form-container" id="review-form-container">
+                    <button class="btn" id="write-review-toggle">Write a Review</button>
+                    <form id="add-review-form" class="add-review-form">
+                        <h3>Share your experience</h3>
+                        <div class="rating-input">
+                            <span class="rating-label">Your Rating:</span>
+                            <div class="star-rating-select">
+                                <i class="fa-solid fa-star select-star" data-rating="1"></i>
+                                <i class="fa-solid fa-star select-star" data-rating="2"></i>
+                                <i class="fa-solid fa-star select-star" data-rating="3"></i>
+                                <i class="fa-solid fa-star select-star" data-rating="4"></i>
+                                <i class="fa-solid fa-star select-star" data-rating="5"></i>
+                            </div>
+                            <input type="hidden" id="selected-rating" value="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="review-text-input">Review Comment</label>
+                            <textarea id="review-text-input" placeholder="What did you think of our pastries?" rows="4" required></textarea>
+                        </div>
+                        <div class="review-form-buttons">
+                            <button type="submit" class="btn">Submit Review</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-review-btn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="wrapper" id="reviews-list-wrapper">
+                    <!-- Dynamic review list goes here -->
+                </div>
+            </section>        
+            
+            <!-- FOOTER SECTION -->
+            <footer class="footer" id="contact">
+                <div class="footer-grid">
+                    <div class="footer-col brand-col">
+                        <a href="#home" class="footer-logo"><img src="images/logo.PNG" alt="Crafted Brews Logo"></a>
+                        <p class="brand-desc">Indulge in heavenly sweet delights. Freshly baked cakes, cheesecakes, and sourdough made with love and premium ingredients daily.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                            <a href="#"><i class="fa-brands fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-col links-col">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#cakes">Cakes</a></li>
+                            <li><a href="#cheese-cakes">Cheesecakes</a></li>
+                            <li><a href="#sourdough">Sourdough</a></li>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#review">Reviews</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col contact-col">
+                        <h4>Contact Us</h4>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>123 Pastry Lane, Sweet Hills, Bakery District</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>+91 98765 43210</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>hello@craftedbrews.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>Mon - Sun: 8:00 AM - 10:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2026 Crafted Brews. All Rights Reserved. Baked with <i class="fa-solid fa-heart"></i> for sweet moments.</p>
+                </div>
+            </footer>
+            
+            
+            <!-- PRODUCT DETAIL & SUGGESTIONS MODAL -->
+            <div id="detail-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal" id="close-detail-modal">&times;</span>
+                    <div class="product-detail-grid">
+                        <div class="product-image">
+                            <img id="modal-product-img" src="" alt="Product Image">
+                        </div>
+                        <div class="product-info">
+                            <h2 id="modal-product-name">Product Name</h2>
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <div class="modal-price" id="modal-product-price">Rs. 0/-</div>
+                            <p id="modal-product-description">Product Description goes here...</p>
+                            <button class="btn" id="modal-add-to-cart-btn">Add to Cart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="suggestions-container">
+                        <h3>Frequently Bought Together</h3>
+                        <div class="suggestions-grid" id="modal-suggestions-grid">
+                            <!-- Dynamic Suggestions Rendered Here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHECKOUT & PAYMENT MODAL -->
+            <div id="checkout-modal" class="modal">
+                <div class="modal-content checkout-content">
+                    <span class="close-modal" id="close-checkout-modal">&times;</span>
+                    
+                    <!-- Checkout Stepper -->
+                    <div class="checkout-stepper">
+                        <div class="step active" id="step-indicator-1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Delivery</div>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" id="step-indicator-2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Payment</div>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" id="step-indicator-3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Success</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkout Forms -->
+                    <div class="checkout-form-container">
+                        <!-- Step 1: Delivery Address -->
+                        <div class="checkout-step-panel active" id="checkout-step-1">
+                            <div class="checkout-header-with-prompt">
+                                <h2>Delivery Details</h2>
+                                <div id="checkout-login-prompt" class="checkout-login-prompt">
+                                    Already have an account? <a href="#" id="checkout-login-link">Log in to earn loyalty points</a>
+                                </div>
+                            </div>
+                            <form id="delivery-form">
+                                <div class="form-group">
+                                    <label for="cust-name">Full Name</label>
+                                    <input type="text" id="cust-name" placeholder="John Doe" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cust-email">Email Address</label>
+                                    <input type="email" id="cust-email" placeholder="john@example.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cust-phone">Phone Number</label>
+                                    <input type="tel" id="cust-phone" placeholder="9876543210" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cust-address">Delivery Address</label>
+                                    <textarea id="cust-address" placeholder="Flat / House No, Street, Landmark" required></textarea>
+                                </div>
+                                <div class="checkout-nav-buttons">
+                                    <span></span> <!-- Spacer -->
+                                    <button type="submit" class="btn">Continue to Payment</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Step 2: Payment Simulator -->
+                        <div class="checkout-step-panel" id="checkout-step-2">
+                            <h2>Payment Information</h2>
+                            <div class="payment-summary">
+                                <div>Order Subtotal: <strong id="checkout-summary-total">Rs. 0/-</strong></div>
+                            </div>
+                            
+                            <div class="payment-tabs">
+                                <button class="payment-tab active" id="tab-card">Credit/Debit Card</button>
+                                <button class="payment-tab" id="tab-upi">UPI / QR Code</button>
+                            </div>
+                            
+                            <!-- Card Payment Form -->
+                            <form id="payment-card-form" class="payment-form active">
+                                <div class="form-group">
+                                    <label for="card-num">Card Number</label>
+                                    <input type="text" id="card-num" placeholder="1234 5678 1234 5678" pattern="\d{16}" maxlength="16" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="card-expiry">Expiry Date</label>
+                                        <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="card-cvv">CVV</label>
+                                        <input type="password" id="card-cvv" placeholder="123" pattern="\d{3}" maxlength="3" required>
+                                    </div>
+                                </div>
+                                <div class="checkout-nav-buttons">
+                                    <button type="button" class="btn btn-secondary" id="back-to-delivery">Back</button>
+                                    <button type="submit" class="btn">Pay Now</button>
+                                </div>
+                            </form>
+                            
+                            <!-- UPI Payment Form -->
+                            <div id="payment-upi-form" class="payment-form">
+                                <p class="upi-instructions">Scan the QR code with your UPI app (Google Pay, PhonePe, Paytm) to make the payment.</p>
+                                <div class="qr-container">
+                                    <div class="mock-qr-code">
+                                        <i class="fa-solid fa-qrcode"></i>
+                                    </div>
+                                    <p class="qr-text">Merchant: Crafted Brews Bakery</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="upi-id">Or enter UPI ID</label>
+                                    <input type="text" id="upi-id" placeholder="username@upi">
+                                </div>
+                                <div class="checkout-nav-buttons">
+                                    <button type="button" class="btn btn-secondary" id="back-to-delivery-upi">Back</button>
+                                    <button type="button" class="btn" id="submit-upi-pay">Confirm QR Payment</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Success Screen -->
+                        <div class="checkout-step-panel success-panel" id="checkout-step-3">
+                            <div class="success-icon-animated">
+                                <div class="checkmark-circle">
+                                    <div class="checkmark draw"></div>
+                                </div>
+                            </div>
+                            <h2>Order Placed Successfully!</h2>
+                            <p>Thank you for shopping with us! Your delicious treats are being prepared.</p>
+                            <div class="order-receipt">
+                                <div>Order ID: <strong id="receipt-id">#CB-00000</strong></div>
+                                <div>Estimated Delivery: <strong>30-45 Mins</strong></div>
+                            </div>
+                            <button class="btn" id="finish-order-btn">Return to Shop</button>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+            
+            <!-- AUTHENTICATION MODAL -->
+            <div id="auth-modal" class="modal">
+                <div class="modal-content auth-content">
+                    <span class="close-modal" id="close-auth-modal">&times;</span>
+                    
+                    <!-- Login Panel -->
+                    <div class="auth-panel active" id="auth-panel-login">
+                        <h2>Login to Your Account</h2>
+                        <form id="login-form">
+                            <div class="form-group">
+                                <label for="login-email">Email Address</label>
+                                <input type="email" id="login-email" placeholder="email@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="login-password" placeholder="••••••••" required>
+                                    <i class="fa-solid fa-eye toggle-password" id="toggle-login-password"></i>
+                                </div>
+                            </div>
+                            <div class="forgot-password-link">
+                                <a href="#" id="forgot-password-btn">Forgot Password?</a>
+                            </div>
+                            <div class="auth-error-msg" id="login-error-msg"></div>
+                            <button type="submit" class="btn auth-submit-btn">Login</button>
+                        </form>
+                        <div class="auth-divider"><span>or</span></div>
+                        <button class="btn google-auth-btn" id="google-login-btn">
+                            <i class="fa-brands fa-google"></i> Continue with Google
+                        </button>
+                        <p class="auth-switch-prompt">
+                            Don't have an account? <a href="#" id="switch-to-signup">Sign Up</a>
+                        </p>
+                    </div>
+                    
+                    <!-- Signup Panel -->
+                    <div class="auth-panel" id="auth-panel-signup">
+                        <h2>Create An Account</h2>
+                        <form id="signup-form">
+                            <div class="form-group">
+                                <label for="signup-name">Full Name</label>
+                                <input type="text" id="signup-name" placeholder="John Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-email">Email Address</label>
+                                <input type="email" id="signup-email" placeholder="email@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-password">Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="signup-password" placeholder="••••••••" minlength="6" required>
+                                    <i class="fa-solid fa-eye toggle-password" id="toggle-signup-password"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-confirm-password">Confirm Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="signup-confirm-password" placeholder="••••••••" required>
+                                    <i class="fa-solid fa-eye toggle-password" id="toggle-signup-confirm-password"></i>
+                                </div>
+                            </div>
+                            <div class="auth-error-msg" id="signup-error-msg"></div>
+                            <button type="submit" class="btn auth-submit-btn">Sign Up</button>
+                        </form>
+                        <div class="auth-divider"><span>or</span></div>
+                        <button class="btn google-auth-btn" id="google-signup-btn">
+                            <i class="fa-brands fa-google"></i> Continue with Google
+                        </button>
+                        <p class="auth-switch-prompt">
+                            Already have an account? <a href="#" id="switch-to-login">Login</a>
+                        </p>
+                    </div>
+
+                    <!-- Forgot Password Panel -->
+                    <div class="auth-panel" id="auth-panel-forgot">
+                        <h2>Reset Password</h2>
+                        <p class="auth-instructions">Enter your email address and we will send you a secure link to reset your password.</p>
+                        <form id="forgot-form">
+                            <div class="form-group">
+                                <label for="forgot-email">Email Address</label>
+                                <input type="email" id="forgot-email" placeholder="email@example.com" required>
+                            </div>
+                            <div class="auth-error-msg" id="forgot-error-msg"></div>
+                            <button type="submit" class="btn auth-submit-btn">Send Reset Link</button>
+                        </form>
+                        <p class="auth-switch-prompt">
+                            Back to <a href="#" id="switch-to-login-from-forgot">Login</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- USER PROFILE MODAL -->
+            <div id="profile-modal" class="modal">
+                <div class="modal-content profile-content">
+                    <span class="close-modal" id="close-profile-modal">&times;</span>
+                    
+                    <div class="profile-layout">
+                        <!-- Profile Sidebar Tabs -->
+                        <div class="profile-tabs">
+                            <div class="profile-user-badge">
+                                <div class="profile-user-avatar" id="profile-avatar-large">??</div>
+                                <div class="profile-user-name" id="profile-name-large">Guest User</div>
+                            </div>
+                            <button class="profile-tab-btn active" data-tab="profile-orders">
+                                <i class="fa-solid fa-clock-rotate-left"></i> Orders
+                            </button>
+                            <button class="profile-tab-btn" data-tab="profile-addresses">
+                                <i class="fa-solid fa-location-dot"></i> Addresses
+                            </button>
+                            <button class="profile-tab-btn" data-tab="profile-loyalty">
+                                <i class="fa-solid fa-award"></i> Loyalty Points
+                            </button>
+                            <button class="profile-tab-btn" data-tab="profile-edit">
+                                <i class="fa-solid fa-user-gear"></i> Edit Profile
+                            </button>
+                            <button class="btn btn-secondary logout-btn" id="logout-btn">
+                                <i class="fa-solid fa-right-from-bracket"></i> Log Out
+                            </button>
+                        </div>
+                        
+                        <!-- Profile Content Panels -->
+                        <div class="profile-panels">
+                            <!-- Orders Panel -->
+                            <div class="profile-panel active" id="profile-orders">
+                                <h3>Order History</h3>
+                                <div id="orders-list-container">
+                                    <!-- Dynamic list of user orders -->
+                                </div>
+                            </div>
+                            
+                            <!-- Addresses Panel -->
+                            <div class="profile-panel" id="profile-addresses">
+                                <h3>Saved Addresses</h3>
+                                <div id="addresses-list-container">
+                                    <!-- Dynamic list of addresses -->
+                                </div>
+                                <form id="add-address-form" class="add-address-form">
+                                    <div class="form-group">
+                                        <label for="new-address-input">Add New Address</label>
+                                        <input type="text" id="new-address-input" placeholder="Flat / House No, Street name, City" required>
+                                    </div>
+                                    <button type="submit" class="btn">Add Address</button>
+                                </form>
+                            </div>
+                            
+                            <!-- Loyalty Panel -->
+                            <div class="profile-panel" id="profile-loyalty">
+                                <h3>Loyalty Card & Rewards</h3>
+                                <div class="loyalty-card">
+                                    <div class="loyalty-card-glow"></div>
+                                    <div class="loyalty-card-header">
+                                        <span class="loyalty-brand">Crafted Brews Premium</span>
+                                        <span class="loyalty-tier" id="loyalty-tier-badge">Bronze Member</span>
+                                    </div>
+                                    <div class="loyalty-card-body">
+                                        <div class="loyalty-title">Points Balance</div>
+                                        <div class="loyalty-points-val"><span id="loyalty-points-display">0</span> Points</div>
+                                        <div class="loyalty-expiry-tag" id="loyalty-expiry-display" style="display: none;">Points valid until: <span>-</span></div>
+                                    </div>
+                                    <div class="loyalty-card-footer">
+                                        <div class="loyalty-progress-container">
+                                            <div class="loyalty-progress-text">
+                                                <span>Next Tier Progress</span>
+                                                <span id="loyalty-next-tier-text">0 / 100 pts</span>
+                                            </div>
+                                            <div class="loyalty-progress-bar">
+                                                <div class="loyalty-progress-fill" id="loyalty-progress-fill" style="width: 0%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="loyalty-rewards-section">
+                                    <h4>Available Rewards</h4>
+                                    <p class="rewards-subtitle">Redeem your hard-earned points for delicious treats!</p>
+                                    <div class="rewards-grid" id="rewards-grid">
+                                        <!-- Rewards items with unlock state -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Edit Profile Panel -->
+                            <div class="profile-panel" id="profile-edit">
+                                <h3>Edit Profile Details</h3>
+                                <form id="edit-profile-form" class="edit-profile-form">
+                                    <div class="form-group">
+                                        <label for="edit-profile-name">Full Name</label>
+                                        <input type="text" id="edit-profile-name" placeholder="John Doe" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Profile Picture</label>
+                                        <div class="avatar-preview-section">
+                                            <div class="avatar-preview-box" id="avatar-preview-box">??</div>
+                                            <div class="avatar-source-options">
+                                                <button type="button" class="btn btn-small" id="upload-avatar-btn"><i class="fa-solid fa-image"></i> Gallery</button>
+                                                <button type="button" class="btn btn-small" id="camera-avatar-btn"><i class="fa-solid fa-camera"></i> Camera</button>
+                                            </div>
+                                            <input type="file" id="edit-profile-avatar-file" accept="image/*" style="display: none;">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="edit-profile-avatar-url">Profile Picture Image URL</label>
+                                        <div class="avatar-url-wrapper">
+                                            <input type="url" id="edit-profile-avatar-url" placeholder="https://example.com/avatar.jpg">
+                                            <button type="button" class="btn" id="avatar-preview-btn">Preview</button>
+                                        </div>
+                                        <small class="form-help-text">Paste a web image link, or upload/capture a photo above.</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Or select a preset avatar</label>
+                                        <div class="avatar-presets">
+                                            <img src="images/profile.jpg" alt="Preset 1" class="preset-avatar-img" data-url="images/profile.jpg">
+                                            <img src="images/profile2.jpg" alt="Preset 2" class="preset-avatar-img" data-url="images/profile2.jpg">
+                                            <div class="preset-avatar-initials" id="preset-avatar-initials-preview">??</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn" style="margin-top: 2rem;">Save Changes</button>
+                                </form>
+                            </div>
+
+                            <!-- Camera Modal Overlay -->
+                            <div id="camera-modal" class="camera-modal">
+                                <div class="camera-modal-content">
+                                    <h3>Take a Profile Photo</h3>
+                                    <div class="camera-viewport">
+                                        <video id="camera-video" autoplay playsinline></video>
+                                        <canvas id="camera-canvas" style="display: none;"></canvas>
+                                    </div>
+                                    <div class="camera-actions">
+                                        <button type="button" class="btn" id="camera-capture-btn">Capture</button>
+                                        <button type="button" class="btn btn-secondary" id="camera-close-btn">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+            <!-- Fullscreen Search Overlay -->
+            <div class="search-overlay" id="search-overlay">
+                <div class="search-modal" id="search-modal">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-modal-icon"></i>
+                        <input type="search" id="search-modal-box" placeholder="Search cakes, cheesecakes, sourdough..." autocomplete="off">
+                        <i class="fa-solid fa-xmark" id="search-modal-close-btn" title="Close Search"></i>
+                    </div>
+                    <div class="search-results-dropdown" id="search-results-dropdown" style="display: none;">
+                        <!-- Dynamic search results list here -->
+                    </div>
+                </div>
+            </div>
+
+        <script src="script.js"></script>
+    </body>
+
+</html>
