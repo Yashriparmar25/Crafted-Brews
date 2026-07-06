@@ -1,7 +1,5 @@
 # Crafted Brews — Premium Bakery & Cafe
 
-![Crafted Brews Website Banner](images/logo.PNG)
-
 A beautifully crafted, modern, and highly responsive single-page e-commerce web application for a premium bakery and cafe. Built using vanilla HTML5, CSS3, and JavaScript, it features full Firebase integration (with an automatic local Mock fallback), a dynamic checkout wizard, real-time debounced search, camera profile captures, and a self-healing loyalty rewards program.
 
 ---
