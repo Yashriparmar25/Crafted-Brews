@@ -4,6 +4,14 @@ const isFirebaseConfigured = isFirebaseLoaded && typeof firebaseConfig !== "unde
                              firebaseConfig.apiKey !== "YOUR_API_KEY" && 
                              !firebaseConfig.apiKey.startsWith("YOUR_");
 
+// Available Rewards definitions
+const REWARDS_LIST = [
+    { id: "r-donut", name: "Free Donut", cost: 30, icon: "fa-cookie" },
+    { id: "r-coffee", name: "Free Hot Coffee", cost: 50, icon: "fa-mug-hot" },
+    { id: "r-muffin", name: "Chocolate Muffin", cost: 80, icon: "fa-bread-slice" },
+    { id: "r-coupon", name: "Rs. 150 Off Coupon", cost: 150, icon: "fa-ticket" }
+];
+
 let auth, db;
 let isMockMode = false;
 
@@ -99,16 +107,36 @@ if (!isFirebaseLoaded || !isFirebaseConfigured) {
             return { user: mockCurrentUser };
         },
         signInWithPopup: async (provider) => {
-            // Mock Google authentication login flow
-            const email = "googleuser@example.com";
-            const uid = "mock_google_uid_12345";
-            if (!mockUsers[email]) {
-                mockUsers[email] = { uid, email, password: "", displayName: "Google Demo User" };
-                setMockStorage("mock_firebase_users", mockUsers);
-            }
-            mockCurrentUser = { uid, email, displayName: mockUsers[email].displayName };
-            triggerAuthChange();
-            return { user: mockCurrentUser };
+            return new Promise((resolve, reject) => {
+                if (googleChooserModal) {
+                    googleChooserModal.classList.add("active");
+                }
+                
+                // Show default panel and hide add custom panel
+                if (googleAccountsPanel) googleAccountsPanel.style.display = "block";
+                if (googleAddPanel) googleAddPanel.style.display = "none";
+                
+                // Reset custom form and captured data
+                if (googleCustomAccountForm) googleCustomAccountForm.reset();
+                googleCapturedAvatarData = "";
+                if (googleCustomAvatarPreview) googleCustomAvatarPreview.innerHTML = "YP";
+                
+                // Render Accounts List
+                renderGoogleAccountsChooser(resolve, reject);
+                
+                // Save resolve/reject references globally for click handlers
+                window.resolveGoogleSignIn = (userObj) => {
+                    mockCurrentUser = userObj;
+                    triggerAuthChange();
+                    if (googleChooserModal) googleChooserModal.classList.remove("active");
+                    resolve({ user: mockCurrentUser });
+                };
+                
+                window.rejectGoogleSignIn = (err) => {
+                    if (googleChooserModal) googleChooserModal.classList.remove("active");
+                    reject(err);
+                };
+            });
         },
         sendPasswordResetEmail: async (email) => {
             if (!mockUsers[email]) {
@@ -121,6 +149,80 @@ if (!isFirebaseLoaded || !isFirebaseConfigured) {
             triggerAuthChange();
         }
     };
+    
+    function renderGoogleAccountsChooser(resolve, reject) {
+        const googleAccountsList = document.querySelector("#google-accounts-list");
+        if (!googleAccountsList) return;
+        googleAccountsList.innerHTML = "";
+        
+        // Prepopulate default Google account
+        const defaultGoogle = {
+            displayName: "Yashri Parmar",
+            email: "yashri.parmar@gmail.com",
+            photoURL: "images/profile.jpg"
+        };
+        
+        // Gather all accounts
+        const localUsers = JSON.parse(localStorage.getItem("mock_firebase_users")) || {};
+        const allAccounts = [defaultGoogle];
+        
+        // Add other existing users if they are not already in the list
+        Object.keys(localUsers).forEach(email => {
+            if (email !== defaultGoogle.email) {
+                allAccounts.push({
+                    displayName: localUsers[email].displayName || email.split("@")[0],
+                    email: email,
+                    photoURL: localUsers[email].photoURL || ""
+                });
+            }
+        });
+        
+        allAccounts.forEach(account => {
+            let avatarHTML = "";
+            if (account.photoURL) {
+                avatarHTML = `<img src="${account.photoURL}" alt="${account.displayName}" class="google-avatar">`;
+            } else {
+                const initial = account.displayName ? account.displayName[0].toUpperCase() : account.email[0].toUpperCase();
+                avatarHTML = `<div class="google-avatar-fallback">${initial}</div>`;
+            }
+            
+            const isCurrent = mockCurrentUser && mockCurrentUser.email === account.email;
+            const itemHTML = `
+                <div class="google-account-item" data-email="${account.email}" data-name="${account.displayName}" data-photo="${account.photoURL}">
+                    ${avatarHTML}
+                    <div class="google-account-info">
+                        <div class="google-name">${account.displayName}</div>
+                        <div class="google-email">${account.email}</div>
+                    </div>
+                    ${isCurrent ? '<i class="fa-solid fa-circle-check google-active-checkmark"></i>' : ''}
+                </div>
+            `;
+            googleAccountsList.insertAdjacentHTML("beforeend", itemHTML);
+        });
+        
+        // Attach click listeners to account chooser items
+        googleAccountsList.querySelectorAll(".google-account-item").forEach(item => {
+            item.addEventListener("click", () => {
+                const email = item.getAttribute("data-email");
+                const name = item.getAttribute("data-name");
+                const photo = item.getAttribute("data-photo");
+                
+                // Get or create record in mock database
+                let uid = "mock_google_uid_" + Math.floor(10000 + Math.random() * 90000);
+                if (localUsers[email]) {
+                    uid = localUsers[email].uid;
+                    localUsers[email].displayName = name;
+                    localUsers[email].photoURL = photo;
+                } else {
+                    localUsers[email] = { uid, email, password: "", displayName: name, photoURL: photo };
+                }
+                localStorage.setItem("mock_firebase_users", JSON.stringify(localUsers));
+                
+                const userObj = { uid, email, displayName: name, photoURL: photo };
+                window.resolveGoogleSignIn(userObj);
+            });
+        });
+    }
     
     db = {
         collection: (colName) => {
@@ -256,6 +358,111 @@ const searchModal = document.querySelector("#search-modal");
 const searchModalBox = document.querySelector("#search-modal-box");
 const searchResultsDropdown = document.querySelector("#search-results-dropdown");
 const searchModalCloseBtn = document.querySelector("#search-modal-close-btn");
+
+// Product Details Modal
+const detailModal = document.querySelector("#detail-modal");
+const closeDetailModal = document.querySelector("#close-detail-modal");
+const modalProductImg = document.querySelector("#modal-product-img");
+const modalProductName = document.querySelector("#modal-product-name");
+const modalProductPrice = document.querySelector("#modal-product-price");
+const modalProductDesc = document.querySelector("#modal-product-description");
+const modalAddToCartBtn = document.querySelector("#modal-add-to-cart-btn");
+const modalSuggestionsGrid = document.querySelector("#modal-suggestions-grid");
+
+// Checkout Modal
+const checkoutModal = document.querySelector("#checkout-modal");
+const openCheckoutBtn = document.querySelector("#open-checkout-btn");
+const closeCheckoutModal = document.querySelector("#close-checkout-modal");
+const checkoutTotalSummary = document.querySelector("#checkout-summary-total");
+const receiptId = document.querySelector("#receipt-id");
+const deliveryForm = document.querySelector("#delivery-form");
+const cardForm = document.querySelector("#payment-card-form");
+const upiForm = document.querySelector("#payment-upi-form");
+const finishOrderBtn = document.querySelector("#finish-order-btn");
+const tabCard = document.querySelector("#tab-card");
+const tabUpi = document.querySelector("#tab-upi");
+const stepPanel1 = document.querySelector("#checkout-step-1");
+const stepPanel2 = document.querySelector("#checkout-step-2");
+const stepPanel3 = document.querySelector("#checkout-step-3");
+const indicator1 = document.querySelector("#step-indicator-1");
+const indicator2 = document.querySelector("#step-indicator-2");
+const indicator3 = document.querySelector("#step-indicator-3");
+
+// Account & Auth Modals
+const authModal = document.querySelector("#auth-modal");
+const closeAuthModal = document.querySelector("#close-auth-modal");
+const profileModal = document.querySelector("#profile-modal");
+const closeProfileModal = document.querySelector("#close-profile-modal");
+const userBtn = document.querySelector("#user-btn");
+const authPanelLogin = document.querySelector("#auth-panel-login");
+const authPanelSignup = document.querySelector("#auth-panel-signup");
+const authPanelForgot = document.querySelector("#auth-panel-forgot");
+const switchToSignup = document.querySelector("#switch-to-signup");
+const switchToLogin = document.querySelector("#switch-to-login");
+const switchToLoginFromForgot = document.querySelector("#switch-to-login-from-forgot");
+const loginForm = document.querySelector("#login-form");
+const signupForm = document.querySelector("#signup-form");
+const forgotForm = document.querySelector("#forgot-form");
+const loginErrorMsg = document.querySelector("#login-error-msg");
+const signupErrorMsg = document.querySelector("#signup-error-msg");
+const forgotErrorMsg = document.querySelector("#forgot-error-msg");
+const googleLoginBtn = document.querySelector("#google-login-btn");
+const googleSignupBtn = document.querySelector("#google-signup-btn");
+const forgotPasswordBtn = document.querySelector("#forgot-password-btn");
+const logoutBtn = document.querySelector("#logout-btn");
+
+// Profile Dashboard
+const profileTabBtns = document.querySelectorAll(".profile-tab-btn");
+const profilePanels = document.querySelectorAll(".profile-panel");
+const profileAvatarLarge = document.querySelector("#profile-avatar-large");
+const profileNameLarge = document.querySelector("#profile-name-large");
+const loyaltyPointsDisplay = document.querySelector("#loyalty-points-display");
+const addressesListContainer = document.querySelector("#addresses-list-container");
+const addAddressForm = document.querySelector("#add-address-form");
+const ordersListContainer = document.querySelector("#orders-list-container");
+const checkoutLoginPrompt = document.querySelector("#checkout-login-prompt");
+const checkoutLoginLink = document.querySelector("#checkout-login-link");
+
+// Google Chooser Modals (Mock)
+const closeGoogleChooser = document.querySelector("#close-google-chooser");
+const googleChooserModal = document.querySelector("#google-chooser-modal");
+const googleAddAccountBtn = document.querySelector("#google-add-account-btn");
+const googleAccountsPanel = document.querySelector("#google-accounts-panel");
+const googleAddPanel = document.querySelector("#google-add-panel");
+const googleCustomAccountForm = document.querySelector("#google-custom-account-form");
+const googleAddCancelBtn = document.querySelector("#google-add-cancel-btn");
+const googleAvatarCameraBtn = document.querySelector("#google-avatar-camera-btn");
+const googleAvatarGalleryBtn = document.querySelector("#google-avatar-gallery-btn");
+const googleAvatarFileInput = document.querySelector("#google-avatar-file-input");
+const googleCustomAvatarPreview = document.querySelector("#google-custom-avatar-preview");
+
+// Profile Edit & Media
+const editProfileForm = document.querySelector("#edit-profile-form");
+const editProfileName = document.querySelector("#edit-profile-name");
+const editProfileAvatarUrl = document.querySelector("#edit-profile-avatar-url");
+const avatarPreviewBtn = document.querySelector("#avatar-preview-btn");
+const presetAvatarImgs = document.querySelectorAll(".preset-avatar-img");
+const presetAvatarInitialsPreview = document.querySelector("#preset-avatar-initials-preview");
+const avatarPreviewBox = document.querySelector("#avatar-preview-box");
+const uploadAvatarBtn = document.querySelector("#upload-avatar-btn");
+const cameraAvatarBtn = document.querySelector("#camera-avatar-btn");
+const editProfileAvatarFile = document.querySelector("#edit-profile-avatar-file");
+
+// Camera Picker Modals
+const cameraModal = document.querySelector("#camera-modal");
+const cameraVideo = document.querySelector("#camera-video");
+const cameraCanvas = document.querySelector("#camera-canvas");
+const cameraCaptureBtn = document.querySelector("#camera-capture-btn");
+const cameraCloseBtn = document.querySelector("#camera-close-btn");
+
+// Customer Reviews
+const reviewsListWrapper = document.querySelector("#reviews-list-wrapper");
+const writeReviewToggle = document.querySelector("#write-review-toggle");
+const addReviewForm = document.querySelector("#add-review-form");
+const cancelReviewBtn = document.querySelector("#cancel-review-btn");
+const selectedRatingInput = document.querySelector("#selected-rating");
+const reviewTextInput = document.querySelector("#review-text-input");
+const starRatingSelect = document.querySelectorAll(".star-rating-select .select-star");
 
 // Close Search Overlay & Reset Inputs
 function closeSearch() {
@@ -490,15 +697,6 @@ document.addEventListener("click", (e) => {
 // SUGGESTION MODAL LOGIC
 // ==========================================
 
-const detailModal = document.querySelector("#detail-modal");
-const closeDetailModal = document.querySelector("#close-detail-modal");
-const modalProductImg = document.querySelector("#modal-product-img");
-const modalProductName = document.querySelector("#modal-product-name");
-const modalProductPrice = document.querySelector("#modal-product-price");
-const modalProductDesc = document.querySelector("#modal-product-description");
-const modalAddToCartBtn = document.querySelector("#modal-add-to-cart-btn");
-const modalSuggestionsGrid = document.querySelector("#modal-suggestions-grid");
-
 // Gather all items to draw suggestions from dynamically
 function getRecommendations(currentName) {
     const allCards = Array.from(document.querySelectorAll("[data-name]"));
@@ -603,45 +801,6 @@ if (closeDetailModal) {
 // ==========================================
 
 let currentUserDoc = null;
-
-// DOM Account elements
-const authModal = document.querySelector("#auth-modal");
-const closeAuthModal = document.querySelector("#close-auth-modal");
-const profileModal = document.querySelector("#profile-modal");
-const closeProfileModal = document.querySelector("#close-profile-modal");
-const userBtn = document.querySelector("#user-btn");
-
-const authPanelLogin = document.querySelector("#auth-panel-login");
-const authPanelSignup = document.querySelector("#auth-panel-signup");
-const authPanelForgot = document.querySelector("#auth-panel-forgot");
-const switchToSignup = document.querySelector("#switch-to-signup");
-const switchToLogin = document.querySelector("#switch-to-login");
-const switchToLoginFromForgot = document.querySelector("#switch-to-login-from-forgot");
-
-const loginForm = document.querySelector("#login-form");
-const signupForm = document.querySelector("#signup-form");
-const forgotForm = document.querySelector("#forgot-form");
-const loginErrorMsg = document.querySelector("#login-error-msg");
-const signupErrorMsg = document.querySelector("#signup-error-msg");
-const forgotErrorMsg = document.querySelector("#forgot-error-msg");
-
-const googleLoginBtn = document.querySelector("#google-login-btn");
-const googleSignupBtn = document.querySelector("#google-signup-btn");
-const forgotPasswordBtn = document.querySelector("#forgot-password-btn");
-const logoutBtn = document.querySelector("#logout-btn");
-
-// Profile panel elements
-const profileTabBtns = document.querySelectorAll(".profile-tab-btn");
-const profilePanels = document.querySelectorAll(".profile-panel");
-const profileAvatarLarge = document.querySelector("#profile-avatar-large");
-const profileNameLarge = document.querySelector("#profile-name-large");
-const loyaltyPointsDisplay = document.querySelector("#loyalty-points-display");
-const addressesListContainer = document.querySelector("#addresses-list-container");
-const addAddressForm = document.querySelector("#add-address-form");
-const ordersListContainer = document.querySelector("#orders-list-container");
-
-const checkoutLoginPrompt = document.querySelector("#checkout-login-prompt");
-const checkoutLoginLink = document.querySelector("#checkout-login-link");
 
 // Switch Panels in Auth Modal
 if (switchToSignup) {
@@ -820,6 +979,7 @@ async function fetchUserProfile(uid) {
             currentUserDoc = {
                 name: user.displayName || "Google User",
                 email: user.email,
+                photoURL: user.photoURL || "",
                 loyaltyPoints: 0,
                 loyaltyExpiry: null,
                 addresses: [],
@@ -985,6 +1145,10 @@ async function handleGoogleLogin(errorMsgElement) {
         await auth.signInWithPopup(provider);
         authModal.classList.remove("active");
     } catch (err) {
+        if (err && (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request")) {
+            console.log("Google Sign-In popup closed by user.");
+            return;
+        }
         console.error("Google sign in error:", err);
         errorMsgElement.textContent = "Google authentication failed. Please try again.";
     }
@@ -996,6 +1160,128 @@ if (googleLoginBtn) {
 
 if (googleSignupBtn) {
     googleSignupBtn.addEventListener("click", () => handleGoogleLogin(signupErrorMsg));
+}
+
+// ==========================================
+// MOCK GOOGLE CHOOSER MODAL INTERACTIONS
+// ==========================================
+
+// Dismiss Google Account Chooser
+if (closeGoogleChooser) {
+    closeGoogleChooser.addEventListener("click", () => {
+        if (typeof window.rejectGoogleSignIn === "function") {
+            window.rejectGoogleSignIn({ code: "auth/popup-closed-by-user" });
+        }
+    });
+}
+
+// Global click listener dismissal for Google Modal
+window.addEventListener("click", (e) => {
+    if (e.target === googleChooserModal) {
+        if (typeof window.rejectGoogleSignIn === "function") {
+            window.rejectGoogleSignIn({ code: "auth/popup-closed-by-user" });
+        }
+    }
+});
+
+// Panel switches: Choose list -> Add Form
+if (googleAddAccountBtn) {
+    googleAddAccountBtn.addEventListener("click", () => {
+        if (googleAccountsPanel) googleAccountsPanel.style.display = "none";
+        if (googleAddPanel) googleAddPanel.style.display = "block";
+    });
+}
+
+// Panel switches: Add Form -> Choose list
+if (googleAddCancelBtn) {
+    googleAddCancelBtn.addEventListener("click", () => {
+        if (googleAddPanel) googleAddPanel.style.display = "none";
+        if (googleAccountsPanel) googleAccountsPanel.style.display = "block";
+    });
+}
+
+// Custom Google Sign up and login submit
+if (googleCustomAccountForm) {
+    googleCustomAccountForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const name = document.querySelector("#google-input-name").value.trim();
+        const email = document.querySelector("#google-input-email").value.trim();
+        
+        if (!name || !email) {
+            alert("Please fill in your name and email.");
+            return;
+        }
+        
+        const localUsers = JSON.parse(localStorage.getItem("mock_firebase_users")) || {};
+        let uid = "mock_google_uid_" + Math.floor(10000 + Math.random() * 90000);
+        
+        if (localUsers[email]) {
+            uid = localUsers[email].uid;
+            localUsers[email].displayName = name;
+            if (googleCapturedAvatarData) {
+                localUsers[email].photoURL = googleCapturedAvatarData;
+            }
+        } else {
+            localUsers[email] = {
+                uid,
+                email,
+                password: "",
+                displayName: name,
+                photoURL: googleCapturedAvatarData || ""
+            };
+        }
+        
+        localStorage.setItem("mock_firebase_users", JSON.stringify(localUsers));
+        
+        const userObj = {
+            uid,
+            email,
+            displayName: name,
+            photoURL: localUsers[email].photoURL || ""
+        };
+        
+        if (typeof window.resolveGoogleSignIn === "function") {
+            window.resolveGoogleSignIn(userObj);
+        }
+    });
+}
+
+// Camera activation inside Google signup
+if (googleAvatarCameraBtn) {
+    googleAvatarCameraBtn.addEventListener("click", () => {
+        cameraTarget = "google";
+        startCamera();
+    });
+}
+
+// Gallery activation inside Google signup
+if (googleAvatarGalleryBtn && googleAvatarFileInput) {
+    googleAvatarGalleryBtn.addEventListener("click", () => {
+        googleAvatarFileInput.click();
+    });
+}
+
+if (googleAvatarFileInput) {
+    googleAvatarFileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    resizeImageToDataURL(img, (dataUrl) => {
+                        googleCapturedAvatarData = dataUrl;
+                        if (googleCustomAvatarPreview) {
+                            googleCustomAvatarPreview.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview">`;
+                        }
+                    });
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 }
 
 // Forgot Password Form Submit
@@ -1147,13 +1433,6 @@ function updateProfileUI(user) {
     renderOrders(user.uid);
 }
 
-// Available Rewards definitions
-const REWARDS_LIST = [
-    { id: "r-donut", name: "Free Donut", cost: 30, icon: "fa-cookie" },
-    { id: "r-coffee", name: "Free Hot Coffee", cost: 50, icon: "fa-mug-hot" },
-    { id: "r-muffin", name: "Chocolate Muffin", cost: 80, icon: "fa-bread-slice" },
-    { id: "r-coupon", name: "Rs. 150 Off Coupon", cost: 150, icon: "fa-ticket" }
-];
 
 function updateLoyaltyTabUI(points) {
     if (!loyaltyPointsDisplay) return;
@@ -1420,31 +1699,6 @@ async function renderOrders(uid) {
 // CHECKOUT & PAYMENT WIZARD FLOW
 // ==========================================
 
-const checkoutModal = document.querySelector("#checkout-modal");
-const openCheckoutBtn = document.querySelector("#open-checkout-btn");
-const closeCheckoutModal = document.querySelector("#close-checkout-modal");
-
-const checkoutTotalSummary = document.querySelector("#checkout-summary-total");
-const receiptId = document.querySelector("#receipt-id");
-
-const deliveryForm = document.querySelector("#delivery-form");
-const cardForm = document.querySelector("#payment-card-form");
-const upiForm = document.querySelector("#payment-upi-form");
-const finishOrderBtn = document.querySelector("#finish-order-btn");
-
-const tabCard = document.querySelector("#tab-card");
-const tabUpi = document.querySelector("#tab-upi");
-
-// Panels
-const stepPanel1 = document.querySelector("#checkout-step-1");
-const stepPanel2 = document.querySelector("#checkout-step-2");
-const stepPanel3 = document.querySelector("#checkout-step-3");
-
-// Indicators
-const indicator1 = document.querySelector("#step-indicator-1");
-const indicator2 = document.querySelector("#step-indicator-2");
-const indicator3 = document.querySelector("#step-indicator-3");
-
 // Open Checkout Modal
 if (openCheckoutBtn) {
     openCheckoutBtn.addEventListener("click", () => {
@@ -1692,14 +1946,6 @@ const DEFAULT_REVIEWS = [
     }
 ];
 
-const reviewsListWrapper = document.querySelector("#reviews-list-wrapper");
-const writeReviewToggle = document.querySelector("#write-review-toggle");
-const addReviewForm = document.querySelector("#add-review-form");
-const cancelReviewBtn = document.querySelector("#cancel-review-btn");
-const selectedRatingInput = document.querySelector("#selected-rating");
-const reviewTextInput = document.querySelector("#review-text-input");
-const starRatingSelect = document.querySelectorAll(".star-rating-select .select-star");
-
 // Load & Render Reviews
 async function loadReviews() {
     if (!reviewsListWrapper) return;
@@ -1888,27 +2134,9 @@ if (addReviewForm) {
 // EDIT PROFILE FORM & PHOTO PICKERS SYSTEM
 // ==========================================
 
-const editProfileForm = document.querySelector("#edit-profile-form");
-const editProfileName = document.querySelector("#edit-profile-name");
-const editProfileAvatarUrl = document.querySelector("#edit-profile-avatar-url");
-const avatarPreviewBtn = document.querySelector("#avatar-preview-btn");
-const presetAvatarImgs = document.querySelectorAll(".preset-avatar-img");
-const presetAvatarInitialsPreview = document.querySelector("#preset-avatar-initials-preview");
-const avatarPreviewBox = document.querySelector("#avatar-preview-box");
-
-// Upload & Camera Buttons
-const uploadAvatarBtn = document.querySelector("#upload-avatar-btn");
-const cameraAvatarBtn = document.querySelector("#camera-avatar-btn");
-const editProfileAvatarFile = document.querySelector("#edit-profile-avatar-file");
-
-// Camera Modal Elements
-const cameraModal = document.querySelector("#camera-modal");
-const cameraVideo = document.querySelector("#camera-video");
-const cameraCanvas = document.querySelector("#camera-canvas");
-const cameraCaptureBtn = document.querySelector("#camera-capture-btn");
-const cameraCloseBtn = document.querySelector("#camera-close-btn");
-
 let cameraStream = null;
+let cameraTarget = "profile"; // "profile" or "google"
+let googleCapturedAvatarData = "";
 
 // Helper to resize image using Canvas (keeps image small ~15KB to avoid storage limits)
 function resizeImageToDataURL(imgElement, callback) {
@@ -2036,6 +2264,7 @@ function stopCamera() {
 
 if (cameraAvatarBtn) {
     cameraAvatarBtn.addEventListener("click", () => {
+        cameraTarget = "profile";
         startCamera();
     });
 }
@@ -2061,16 +2290,24 @@ if (cameraCaptureBtn && cameraVideo && cameraCanvas) {
         ctx.drawImage(cameraVideo, sx, sy, minDim, minDim, 0, 0, 200, 200);
         const dataUrl = cameraCanvas.toDataURL("image/jpeg", 0.85);
         
-        if (editProfileAvatarUrl) editProfileAvatarUrl.value = dataUrl;
-        
-        presetAvatarImgs.forEach(i => i.classList.remove("selected"));
-        if (presetAvatarInitialsPreview) presetAvatarInitialsPreview.classList.remove("selected");
-        
-        if (profileAvatarLarge) {
-            profileAvatarLarge.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block;">`;
-        }
-        if (avatarPreviewBox) {
-            avatarPreviewBox.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview">`;
+        if (cameraTarget === "google") {
+            googleCapturedAvatarData = dataUrl;
+            const googleCustomAvatarPreview = document.querySelector("#google-custom-avatar-preview");
+            if (googleCustomAvatarPreview) {
+                googleCustomAvatarPreview.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview">`;
+            }
+        } else {
+            if (editProfileAvatarUrl) editProfileAvatarUrl.value = dataUrl;
+            
+            presetAvatarImgs.forEach(i => i.classList.remove("selected"));
+            if (presetAvatarInitialsPreview) presetAvatarInitialsPreview.classList.remove("selected");
+            
+            if (profileAvatarLarge) {
+                profileAvatarLarge.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block;">`;
+            }
+            if (avatarPreviewBox) {
+                avatarPreviewBox.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview">`;
+            }
         }
         
         stopCamera();

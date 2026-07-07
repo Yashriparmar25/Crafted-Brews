@@ -96,10 +96,7 @@ section{
 
 .header .logo img{
     height: 7rem;
-    border-radius: 50%;
-    border: 2px solid var(--main-color);
-    background-color: #F4E4E1;
-    padding: 0.3rem;
+    width: auto;
     object-fit: contain;
 }
 
@@ -2764,10 +2761,8 @@ section{
 
 .brand-col .footer-logo img {
     height: 7.5rem;
-    border-radius: 50%;
-    border: 2px solid var(--main-color);
-    background-color: #F4E4E1;
-    padding: 0.3rem;
+    width: auto;
+    object-fit: contain;
     margin-bottom: 1.5rem;
 }
 
@@ -2864,5 +2859,248 @@ section{
         gap: 4rem;
     }
 }
+
+/* ==========================================
+   GOOGLE ACCOUNT CHOOSER MODAL STYLES
+   ========================================== */
+.google-chooser-content {
+    max-width: 42rem;
+    padding: 3.5rem 3rem;
+    border-radius: 1.2rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background-color: var(--white);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #202124;
+}
+
+.google-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.google-g-logo {
+    display: block;
+    margin: 0 auto 1.5rem;
+}
+
+.google-header h2 {
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: #202124;
+    font-family: inherit;
+    margin-bottom: 0.5rem;
+    text-transform: none;
+}
+
+.google-subtitle {
+    font-size: 1.4rem;
+    color: #5f6368;
+    text-transform: none;
+}
+
+.google-subtitle .g-brand-accent {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.google-accounts-list {
+    max-height: 24rem;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.google-account-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.2rem 1.5rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.2s ease;
+    border-radius: 0.8rem;
+    margin-bottom: 0.4rem;
+}
+
+.google-account-item:last-child {
+    border-bottom: none;
+}
+
+.google-account-item:hover {
+    background-color: #f8f9fa;
+}
+
+.google-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+.google-avatar-fallback {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background-color: #1a73e8;
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.google-avatar-placeholder {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background-color: #f1f3f4;
+    color: #5f6368;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #dadce0;
+}
+
+.google-account-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.google-name {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #202124;
+    text-transform: none;
+}
+
+.google-email {
+    font-size: 1.2rem;
+    color: #5f6368;
+    text-transform: none;
+}
+
+.google-active-checkmark {
+    font-size: 1.4rem;
+    color: #1a73e8;
+    margin-left: auto;
+}
+
+/* Custom form and buttons for Google modal */
+#google-custom-account-form .form-group {
+    margin-bottom: 1.8rem;
+}
+
+#google-custom-account-form label {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #5f6368;
+    margin-bottom: 0.6rem;
+    display: block;
+    text-transform: none;
+}
+
+#google-custom-account-form input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    font-size: 1.4rem;
+    border: 1px solid #dadce0;
+    border-radius: 0.6rem;
+    outline: none;
+    transition: border-color 0.2s;
+    background-color: #fff;
+    color: #202124;
+    text-transform: none;
+}
+
+#google-custom-account-form input:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 1px #1a73e8;
+}
+
+.google-custom-avatar-selector {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+    border: 1px solid #e0e0e0;
+}
+
+.google-preview-avatar {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    background-color: #e8eaed;
+    color: #5f6368;
+    font-size: 2.2rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.google-preview-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.google-avatar-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.google-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.2rem;
+    margin-top: 2.5rem;
+}
+
+.google-actions .btn {
+    padding: 0.8rem 2rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    border-radius: 0.6rem;
+}
+
+.google-actions .btn-secondary {
+    background-color: transparent;
+    color: #1a73e8;
+    border: 1px solid #dadce0;
+}
+
+.google-actions .btn-secondary:hover {
+    background-color: #f8f9fa;
+}
+
+.google-actions .btn:not(.btn-secondary) {
+    background-color: #1a73e8;
+    color: #fff;
+}
+
+.google-actions .btn:not(.btn-secondary):hover {
+    background-color: #1557b0;
+}
+
+#close-google-chooser {
+    font-size: 2.2rem;
+    color: #5f6368;
+}
+
+#close-google-chooser:hover {
+    color: #202124;
+}
+
 
 
